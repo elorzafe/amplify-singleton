@@ -4,7 +4,8 @@
   "description": "",
   "main": "lib-esm/index.js",
   "scripts": {
-    "build-w": "tsc --watch"
+    "build-w": "tsc --watch",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
