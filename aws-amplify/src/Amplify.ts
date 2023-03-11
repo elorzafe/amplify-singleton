@@ -4,9 +4,15 @@ import { AmplifyUserSession, FrontendConfig, ResourceConfig } from "./types";
 class AmplifySingleton {
     resourcesConfig: ResourceConfig | undefined;
     frontendConfig: FrontendConfig | undefined;
+    notifyConfig: ((resources: ResourceConfig) => void) | undefined;
+
     configure(resources: ResourceConfig, frontend: FrontendConfig): void {
         this.resourcesConfig = resources;
         this.frontendConfig = frontend;
+
+        if (this.notifyConfig) {
+            this.notifyConfig(this.resourcesConfig);
+        }
     }
 
     async getUserSession(): Promise<AmplifyUserSession | undefined> {
@@ -24,12 +30,17 @@ class AmplifySingleton {
 
     }
     
+    // Note: I think this could be narrowed down per category instead of getting the whole thing
     getResourceConfig(): ResourceConfig {
         return JSON.parse(JSON.stringify(this.resourcesConfig));
     }
     
     observeConfig(): Observable<ResourceConfig> {
-        throw new Error('Not implemented');
+        return new Observable(observer => {
+            this.notifyConfig = (resourcesConfig: ResourceConfig) => {
+                observer.next(resourcesConfig);
+            }
+        });
     }
 }
 
