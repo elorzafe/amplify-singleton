@@ -1,4 +1,4 @@
-import { signIn, signOut } from 'aws-amplify';
+import { Amplify, signIn, signOut } from 'aws-amplify';
 
 export function createSignIn() {
     const button = document.createElement('button');
@@ -19,3 +19,18 @@ export function createSignOut() {
 
     return button;
 };
+
+export function createConfigButton() {
+    const button = document.createElement('button');
+    button.innerHTML = 'Config';
+    button.addEventListener('click', async () => {
+        Amplify.configure({
+            Auth: {
+                identityPoolId: 'asdasd'
+            }
+        }, {});
+    })
+    
+    return button;
+
+}

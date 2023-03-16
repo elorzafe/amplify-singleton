@@ -1,47 +1,58 @@
-import { Observable } from "zen-observable-ts";
-import { AmplifyUserSession, FrontendConfig, ResourceConfig } from "./types";
+import { AmplifyUserSession, FrontendConfig, ResourceConfig, UserSessionCallback } from "./types";
 
 class AmplifySingleton {
+    userSessionListeners: UserSessionCallback[] = [];
+    resourceConfigListeners: ResourceConfigCallback[] = [];
     resourcesConfig: ResourceConfig | undefined;
     frontendConfig: FrontendConfig | undefined;
-    notifyConfig: ((resources: ResourceConfig) => void) | undefined;
 
     configure(resources: ResourceConfig, frontend: FrontendConfig): void {
         this.resourcesConfig = resources;
         this.frontendConfig = frontend;
 
-        if (this.notifyConfig) {
-            this.notifyConfig(this.resourcesConfig);
+        for (const listener of this.resourceConfigListeners) {
+            listener(this.resourcesConfig);
+        }
+
+        if (typeof this.frontendConfig?.sessionHandler?.listenUserSession === "function") {
+            this.frontendConfig.sessionHandler.listenUserSession((user: AmplifyUserSession) => {
+                for (const userSessionListener of this.userSessionListeners) {
+                    userSessionListener(user);                    
+                }
+            })
         }
     }
 
     async getUserSession(): Promise<AmplifyUserSession | undefined> {
         return await this.frontendConfig?.sessionHandler?.getUserSession();
     }
-    
-    observeUserSession(): Observable<AmplifyUserSession> {
-        if (!this.frontendConfig ||
-            !this.frontendConfig.sessionHandler ||
-            !this.frontendConfig.sessionHandler.observeSession) {
-            throw new Error('No observe on sessionHandler');
+
+    listenUserSession(callback: UserSessionCallback): () => void {
+        const getUserSessionPromise = this.getUserSession();
+        const localUserSessionListeners = this.userSessionListeners;
+        localUserSessionListeners.push(callback);
+        (async function(){ 
+            const userSession = await getUserSessionPromise;
+            if (userSession) { callback(userSession) };
+        })();
+        return () => {
+            this.userSessionListeners = this.userSessionListeners.filter(listener => listener !== callback);
         }
-
-        return this.frontendConfig.sessionHandler.observeSession;
-
     }
-    
+
     // Note: I think this could be narrowed down per category instead of getting the whole thing
     getResourceConfig(): ResourceConfig {
-        return JSON.parse(JSON.stringify(this.resourcesConfig));
+        return this.resourcesConfig ? JSON.parse(JSON.stringify(this.resourcesConfig)) : {};
     }
-    
-    observeConfig(): Observable<ResourceConfig> {
-        return new Observable(observer => {
-            this.notifyConfig = (resourcesConfig: ResourceConfig) => {
-                observer.next(resourcesConfig);
-            }
-        });
+
+    listenResourceConfig(callback: ResourceConfigCallback){    
+        this.resourceConfigListeners.push(callback);
+        callback(this.getResourceConfig());
+        return () => {
+            this.resourceConfigListeners = this.resourceConfigListeners.filter(listener => listener !== callback);
+        }
     }
 }
+type ResourceConfigCallback = (config: ResourceConfig) => void;
 
 export const Amplify = new AmplifySingleton();

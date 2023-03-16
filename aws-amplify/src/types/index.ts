@@ -1,5 +1,3 @@
-import { Observable } from "zen-observable-ts";
-
 export type ICredentials = {
     accessKeyId: string;
     sessionToken: string;
@@ -26,7 +24,8 @@ export type AmplifyUserSession = {
     credentials?: ICredentials
 };
 
-export type SessionHandler = {
+export interface SessionHandler {
     getUserSession: () => Promise<AmplifyUserSession>,
-    observeSession?: Observable<AmplifyUserSession>
+    listenUserSession: (callback: UserSessionCallback) => (() => void);
 }
+export type UserSessionCallback = (user: AmplifyUserSession) => void;

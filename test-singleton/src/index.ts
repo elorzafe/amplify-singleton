@@ -1,8 +1,12 @@
 import { Amplify } from 'aws-amplify';
-import { createSignIn, createSignOut } from './test';
+import { createConfigButton, createSignIn, createSignOut } from './test';
 import { UserInfoComponent } from './session';
 
-import { sessionHandler } from 'aws-amplify';
+import { sessionHandler, ResourceConfig } from 'aws-amplify';
+
+Amplify.listenResourceConfig((config: ResourceConfig) => {
+    console.warn({config})
+})
 
 Amplify.configure({
     Auth: {
@@ -21,3 +25,6 @@ signOutButton.appendChild(createSignOut());
 
 const userInfo = document.getElementById('user-info');
 UserInfoComponent().then(comp => userInfo.appendChild(comp));
+
+const updateConfig = document.getElementById('update-config');
+updateConfig.appendChild(createConfigButton());

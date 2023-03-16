@@ -1,11 +1,16 @@
-import { Observable } from "zen-observable-ts";
-import { AmplifyUserSession, SessionHandler } from "../types";
+import { AmplifyUserSession, SessionHandler, UserSessionCallback } from "../types";
 
-export let sessionNotifier: (user: AmplifyUserSession) => void;
+export let sessionNotifier = (user: AmplifyUserSession) => {
+    for (const listener of listeners) {
+        listener(user);
+    }
+};
 
 const activeSession: AmplifyUserSession = {
     isLoggedIn: false
 }
+
+let listeners: UserSessionCallback[] = [];
 
 export const sessionHandler: SessionHandler = {
     getUserSession: async () => {
@@ -13,13 +18,11 @@ export const sessionHandler: SessionHandler = {
         // if first time called get session from persisted state
         return activeSession;
     },
-    observeSession: new Observable(observer => {
-        observer.next(activeSession);
-        sessionNotifier = (userSession) => {
-            activeSession.isLoggedIn = userSession.isLoggedIn;
-            activeSession.username = userSession.username;
-
-            observer.next(activeSession)
-        }
-    })
+    listenUserSession: (callback: UserSessionCallback) => {
+        callback(activeSession);
+        listeners.push(callback);
+        return () => {
+            listeners = listeners.filter(listener => listener !== callback);
+        }  
+    }
 }

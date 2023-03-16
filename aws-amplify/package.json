@@ -14,6 +14,5 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "zen-observable-ts": "^1.1.0"
   }
 }
