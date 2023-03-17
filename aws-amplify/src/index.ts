@@ -2,6 +2,6 @@ export { Amplify } from './Amplify';
 
 export { signIn, signOut } from './cognito/cognito';
 
-export { sessionHandler } from './cognito/sessionHandler';
+export { userSessionProvider } from './cognito/userSessionProvider';
 
-export type { SessionHandler, AmplifyUserSession, ResourceConfig } from './types';
+export type { UserSessionProvider, AmplifyUserSession, ResourceConfig } from './types';

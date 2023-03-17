@@ -1,14 +1,14 @@
 import { Amplify } from "..";
-import { sessionNotifier } from "./sessionHandler";
+import { userSessionNotifier } from "./userSessionProvider";
 
 export async function signIn({ username, password }: { username: string, password: string }): Promise<boolean> {
     const config = Amplify.getResourceConfig();
-    if (! (config.Auth.userPoolId)) {
+    if (!config?.Auth?.userPoolId) {
         throw new Error('No user pool configured');
     }
 
-    if (sessionNotifier && typeof sessionNotifier === 'function') {
-        sessionNotifier({
+    if (userSessionNotifier && typeof userSessionNotifier === 'function') {
+        userSessionNotifier({
             isLoggedIn: true,
             username
         });
@@ -17,8 +17,8 @@ export async function signIn({ username, password }: { username: string, passwor
 }
 
 export async function signOut() {
-    if (sessionNotifier && typeof sessionNotifier === 'function') {
-        sessionNotifier({
+    if (userSessionNotifier && typeof userSessionNotifier === 'function') {
+        userSessionNotifier({
             isLoggedIn: false,
             username: undefined
         });

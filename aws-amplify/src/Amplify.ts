@@ -1,58 +1,56 @@
-import { AmplifyUserSession, FrontendConfig, ResourceConfig, UserSessionCallback } from "./types";
+import { AmplifyUserSession, Categories, FrontendConfig, GetUserSessionOptions, ResourceConfig, ResourceConfigCallback, UserSessionCallback } from "./types";
 
-class AmplifySingleton {
-    userSessionListeners: UserSessionCallback[] = [];
-    resourceConfigListeners: ResourceConfigCallback[] = [];
-    resourcesConfig: ResourceConfig | undefined;
-    frontendConfig: FrontendConfig | undefined;
+let userSessionListeners: UserSessionCallback[] = [];
+let resourceConfigListeners: ResourceConfigCallback[] = [];
+let resourcesConfig: ResourceConfig | undefined;
+let frontendConfig: FrontendConfig | undefined;
 
+const Amplify = {
     configure(resources: ResourceConfig, frontend: FrontendConfig): void {
-        this.resourcesConfig = resources;
-        this.frontendConfig = frontend;
-
-        for (const listener of this.resourceConfigListeners) {
-            listener(this.resourcesConfig);
+        resourcesConfig = resources;
+        frontendConfig = frontend;
+    
+        for (const listener of resourceConfigListeners) {
+            listener(resourcesConfig);
         }
-
-        if (typeof this.frontendConfig?.sessionHandler?.listenUserSession === "function") {
-            this.frontendConfig.sessionHandler.listenUserSession((user: AmplifyUserSession) => {
-                for (const userSessionListener of this.userSessionListeners) {
-                    userSessionListener(user);                    
+    
+        if (typeof frontendConfig?.userSessionProvider?.listenUserSession === "function") {
+            frontendConfig.userSessionProvider.listenUserSession((user: AmplifyUserSession) => {
+                for (const userSessionListener of userSessionListeners) {
+                    userSessionListener(user);
                 }
             })
         }
-    }
-
-    async getUserSession(): Promise<AmplifyUserSession | undefined> {
-        return await this.frontendConfig?.sessionHandler?.getUserSession();
-    }
-
+    },
+    async getUserSession(options?: GetUserSessionOptions): Promise<AmplifyUserSession | undefined> {
+        return await frontendConfig?.userSessionProvider?.getUserSession({ forceRefresh: options?.forceRefresh });
+    },
     listenUserSession(callback: UserSessionCallback): () => void {
-        const getUserSessionPromise = this.getUserSession();
-        const localUserSessionListeners = this.userSessionListeners;
+        const getUserSessionPromise = Amplify.getUserSession();
+        const localUserSessionListeners = userSessionListeners;
         localUserSessionListeners.push(callback);
-        (async function(){ 
+        (async function () {
             const userSession = await getUserSessionPromise;
             if (userSession) { callback(userSession) };
         })();
         return () => {
-            this.userSessionListeners = this.userSessionListeners.filter(listener => listener !== callback);
+            userSessionListeners = userSessionListeners.filter(listener => listener !== callback);
         }
-    }
-
-    // Note: I think this could be narrowed down per category instead of getting the whole thing
+    },
     getResourceConfig(): ResourceConfig {
-        return this.resourcesConfig ? JSON.parse(JSON.stringify(this.resourcesConfig)) : {};
-    }
-
-    listenResourceConfig(callback: ResourceConfigCallback){    
-        this.resourceConfigListeners.push(callback);
-        callback(this.getResourceConfig());
+        return {...resourcesConfig};
+    },
+    listenResourceConfig(callback: ResourceConfigCallback) {
+        resourceConfigListeners.push(callback);
+        callback(Amplify.getResourceConfig());
         return () => {
-            this.resourceConfigListeners = this.resourceConfigListeners.filter(listener => listener !== callback);
+            resourceConfigListeners = resourceConfigListeners.filter(listener => listener !== callback);
         }
     }
 }
-type ResourceConfigCallback = (config: ResourceConfig) => void;
 
-export const Amplify = new AmplifySingleton();
+type ResourceConfigCategories = ResourceConfig["Auth"] | ResourceConfig["API"] | ResourceConfig["Analytics"] | undefined; 
+
+Object.freeze(Amplify);
+
+export { Amplify };

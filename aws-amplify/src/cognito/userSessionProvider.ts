@@ -1,6 +1,6 @@
-import { AmplifyUserSession, SessionHandler, UserSessionCallback } from "../types";
+import { AmplifyUserSession, UserSessionProvider, UserSessionCallback } from "../types";
 
-export let sessionNotifier = (user: AmplifyUserSession) => {
+export let userSessionNotifier = (user: AmplifyUserSession) => {
     for (const listener of listeners) {
         listener(user);
     }
@@ -12,7 +12,7 @@ const activeSession: AmplifyUserSession = {
 
 let listeners: UserSessionCallback[] = [];
 
-export const sessionHandler: SessionHandler = {
+export const userSessionProvider: UserSessionProvider = {
     getUserSession: async () => {
         // check if session is valid, otherwise refresh
         // if first time called get session from persisted state

@@ -1,0 +1,49 @@
+Arguments: 
+  /Users/elorzafe/.nvm/versions/node/v19.7.0/bin/node /usr/local/bin/yarn
+
+PATH: 
+  /Users/elorzafe/.amplify/bin:/Users/elorzafe/.toolbox/bin:/Users/elorzafe/amplify/Apps/::/Users/elorzafe/.nvm/versions/node/v19.7.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/apollo/env/SDETools/bin:/usr/local/share/dotnet:/Users/elorzafe/.dotnet/tools:/Users/elorzafe/Library/Android/sdk/emulator:/Users/elorzafe/Library/Android/sdk/tools:/Users/elorzafe/Library/Android/sdk/tools/bin:/Users/elorzafe/Library/Android/sdk/platform-tools:/Users/elorzafe/.cargo/bin/:/Users/elorzafe/amplify/Apps:/usr/local/opt/fzf/bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  19.7.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/elorzafe/amplify/projects/2023/10-design-singleton/aws-amplify/package.json: Expected double-quoted property name in JSON at position 332
+      at JSON.parse (<anonymous>)
+      at /Users/elorzafe/.config/yarn/global/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/Users/elorzafe/.config/yarn/global/node_modules/yarn/lib/cli.js:310:30)
+      at /Users/elorzafe/.config/yarn/global/node_modules/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "aws-amplify",
+    "version": "1.0.0",
+    "description": "",
+    "main": "lib-esm/index.js",
+    "scripts": {
+      "build-w": "tsc --watch",
+      "build": "tsc"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+      "typescript": "^4.9.5"
+    },
+    "dependencies": {
+      "zen-observable": "0.10.0",
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

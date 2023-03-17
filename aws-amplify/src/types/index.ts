@@ -7,25 +7,58 @@ export type ICredentials = {
     expiration?: Date;
 }
 
+export interface JWT {
+    payload: JSON,
+    header: JSON,
+    signature: string,
+    toString: () => string,
+    isValid: () => boolean
+}
+
+export type JWTS = {
+    accessToken?: JWT,
+    idToken?: JWT
+}
+
 export type ResourceConfig = {
-    Auth: {
+    Auth?: {
         userPoolId?: string,
         identityPoolId?: string,
         userPoolWebClientId?: string,
-    }
+    },
+    API?: {},
+    Analytics?: {},
+    Storage?: {},
+    DataStore?: {},
+    Predictions?: {},
+    Interactions?: {},
+    Notifications?: {}
 };
+
+type AuthConfig = ResourceConfig["Auth"];
+
 export type FrontendConfig = {
-    sessionHandler?: SessionHandler
+    userSessionProvider?: UserSessionProvider
 };
 
 export type AmplifyUserSession = {
     isLoggedIn: boolean,
     username?: string,
-    credentials?: ICredentials
+    credentials?: ICredentials,
+    jwts?: JWTS
 };
 
-export interface SessionHandler {
-    getUserSession: () => Promise<AmplifyUserSession>,
+export type GetUserSessionOptions = {
+    forceRefresh?: boolean
+}
+
+export interface UserSessionProvider {
+    getUserSession: (options?: GetUserSessionOptions) => Promise<AmplifyUserSession | undefined>,
     listenUserSession: (callback: UserSessionCallback) => (() => void);
 }
+
 export type UserSessionCallback = (user: AmplifyUserSession) => void;
+
+export type ResourceConfigCallback = (config: Object | undefined) => void;
+
+export type Categories = "Auth" | "API" | "Storage" | "Analytics" | "DataStore" | "Predictions" | "Interactions" | "Notifications";
