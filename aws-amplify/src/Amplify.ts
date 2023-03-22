@@ -23,7 +23,7 @@ const Amplify = {
         }
     },
     async getUserSession(options?: GetUserSessionOptions): Promise<AmplifyUserSession | undefined> {
-        return await frontendConfig?.userSessionProvider?.getUserSession({ forceRefresh: options?.forceRefresh });
+        return await frontendConfig?.userSessionProvider?.getUserSession({ refresh: options?.refresh });
     },
     listenUserSession(callback: UserSessionCallback): () => void {
         const getUserSessionPromise = Amplify.getUserSession();
@@ -37,15 +37,8 @@ const Amplify = {
             userSessionListeners = userSessionListeners.filter(listener => listener !== callback);
         }
     },
-    getResourceConfig(): ResourceConfig {
+    getConfig(): ResourceConfig {
         return {...resourcesConfig};
-    },
-    listenResourceConfig(callback: ResourceConfigCallback) {
-        resourceConfigListeners.push(callback);
-        callback(Amplify.getResourceConfig());
-        return () => {
-            resourceConfigListeners = resourceConfigListeners.filter(listener => listener !== callback);
-        }
     }
 }
 

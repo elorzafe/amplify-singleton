@@ -1,12 +1,7 @@
-import { Amplify } from 'aws-amplify';
+import { Amplify, userSessionProvider } from 'aws-amplify';
+
 import { createConfigButton, createSignIn, createSignOut } from './test';
 import { UserInfoComponent } from './session';
-
-import { sessionHandler, ResourceConfig } from 'aws-amplify';
-
-Amplify.listenResourceConfig((config: ResourceConfig) => {
-    console.warn({config})
-})
 
 Amplify.configure({
     Auth: {
@@ -14,7 +9,7 @@ Amplify.configure({
         userPoolWebClientId: 'asdasd'
     }
 }, {
-    sessionHandler
+    userSessionProvider
 });
 
 const signInButton = document.getElementById('signIn-button');

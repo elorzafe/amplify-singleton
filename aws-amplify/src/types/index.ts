@@ -49,10 +49,10 @@ export type AmplifyUserSession = {
 };
 
 export type GetUserSessionOptions = {
-    forceRefresh?: boolean
+    refresh?: boolean
 }
 
-export interface UserSessionProvider {
+export interface UserSessionProvider { 
     getUserSession: (options?: GetUserSessionOptions) => Promise<AmplifyUserSession | undefined>,
     listenUserSession: (callback: UserSessionCallback) => (() => void);
 }

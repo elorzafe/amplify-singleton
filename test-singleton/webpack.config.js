@@ -1,5 +1,5 @@
 const path = require('path');
-
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 module.exports = {
   entry: './src/index.ts',
   module: {
@@ -18,4 +18,6 @@ module.exports = {
     filename: 'main.js',
     path: path.resolve(__dirname, 'public'),
   },
+  plugins: [
+  ]
 };
