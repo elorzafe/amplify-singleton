@@ -20,5 +20,7 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "aws-amplify": "file://Users/elorzafe/amplify/projects/2023/10-design-singleton/aws-amplify",
+    "tslib": "^2.5.0"
   }
 }

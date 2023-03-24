@@ -1,7 +1,10 @@
-import { Amplify, userSessionProvider } from 'aws-amplify';
-
-import { createConfigButton, createSignIn, createSignOut } from './test';
+import { Amplify, userSessionProvider, Hub, credentialsProvider } from 'aws-amplify';
+import { filter } from 'rxjs';
+import { createSignIn, createSignOut } from './components';
 import { UserInfoComponent } from './session';
+
+
+Hub.observe('core').subscribe({ next: (capsule) => console.warn(capsule) });
 
 Amplify.configure({
     Auth: {
@@ -9,17 +12,31 @@ Amplify.configure({
         userPoolWebClientId: 'asdasd'
     }
 }, {
-    userSessionProvider
+    userSessionProvider: credentialsProvider(userSessionProvider)
 });
 
-const signInButton = document.getElementById('signIn-button');
-signInButton.appendChild(createSignIn());
+// Auth guard, this could be a useEffect on react (a hook could be very easily implement with Amplify Singleton)
+Amplify.listenUserSession().pipe(filter(user => !user.isLoggedIn)).subscribe((user) => {
+    console.log(`logged out: ${user}`);
+    const appContent = document.getElementById('app-content');
+    appContent.innerHTML = '';
 
-const signOutButton = document.getElementById('signOut-button');
-signOutButton.appendChild(createSignOut());
+    appContent.appendChild(createSignIn());
+    
+});
+Amplify.listenUserSession().pipe(filter(user => user.isLoggedIn)).subscribe((user) => {
+    console.log(`logged In: ${user}`);
+    const appContent = document.getElementById('app-content');
+    appContent.innerHTML = '';
+
+    const signOutButton = createSignOut();
+
+    const content = document.createElement('p');
+    content.innerHTML = `This is a secret content only visible for the current user: ${user.username}`;
+
+    appContent.appendChild(content);
+    appContent.appendChild(signOutButton);
+});
 
 const userInfo = document.getElementById('user-info');
 UserInfoComponent().then(comp => userInfo.appendChild(comp));
-
-const updateConfig = document.getElementById('update-config');
-updateConfig.appendChild(createConfigButton());

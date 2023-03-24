@@ -1,3 +1,4 @@
+import type { Observable } from 'rxjs';
 export type ICredentials = {
     accessKeyId: string;
     sessionToken: string;
@@ -52,9 +53,9 @@ export type GetUserSessionOptions = {
     refresh?: boolean
 }
 
-export interface UserSessionProvider { 
+export interface UserSessionProvider {
     getUserSession: (options?: GetUserSessionOptions) => Promise<AmplifyUserSession | undefined>,
-    listenUserSession: (callback: UserSessionCallback) => (() => void);
+    listenUserSession(): Observable<AmplifyUserSession>
 }
 
 export type UserSessionCallback = (user: AmplifyUserSession) => void;
