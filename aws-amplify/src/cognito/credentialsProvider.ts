@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
-import { AmplifyUserSession, UserSessionProvider } from "../types";
+import { AmplifyUserSession, AmplifyUserSessionProvider } from "../types";
 
-export const credentialsProvider: (userSessionProvider: UserSessionProvider) => UserSessionProvider = (userSessionProvider: UserSessionProvider) => {
+export const credentialsProvider: (userSessionProvider: AmplifyUserSessionProvider) => AmplifyUserSessionProvider = (userSessionProvider: AmplifyUserSessionProvider) => {
     return {
         getUserSession: async () => {
             let user = await userSessionProvider.getUserSession();

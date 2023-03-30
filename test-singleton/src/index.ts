@@ -1,8 +1,7 @@
-import { Amplify, userSessionProvider, Hub, credentialsProvider } from 'aws-amplify';
+import { Amplify, userPoolSessionProvider, Hub, credentialsProvider } from 'aws-amplify';
 import { filter } from 'rxjs';
 import { createSignIn, createSignOut } from './components';
 import { UserInfoComponent } from './session';
-
 
 Hub.observe('core').subscribe({ next: (capsule) => console.warn(capsule) });
 
@@ -12,11 +11,11 @@ Amplify.configure({
         userPoolWebClientId: 'asdasd'
     }
 }, {
-    userSessionProvider: credentialsProvider(userSessionProvider)
+    sessionProvider: credentialsProvider(userPoolSessionProvider),
 });
 
-// Auth guard, this could be a useEffect on react (a hook could be very easily implement with Amplify Singleton)
-Amplify.listenUserSession().pipe(filter(user => !user.isLoggedIn)).subscribe((user) => {
+// // Auth guard, this could be a useEffect on react (a hook could be very easily implement with Amplify Singleton)
+Amplify.Auth.listenUserSession().pipe(filter(user => !user.isLoggedIn)).subscribe((user) => {
     console.log(`logged out: ${user}`);
     const appContent = document.getElementById('app-content');
     appContent.innerHTML = '';
@@ -24,7 +23,7 @@ Amplify.listenUserSession().pipe(filter(user => !user.isLoggedIn)).subscribe((us
     appContent.appendChild(createSignIn());
     
 });
-Amplify.listenUserSession().pipe(filter(user => user.isLoggedIn)).subscribe((user) => {
+Amplify.Auth.listenUserSession().pipe(filter(user => user.isLoggedIn)).subscribe((user) => {
     console.log(`logged In: ${user}`);
     const appContent = document.getElementById('app-content');
     appContent.innerHTML = '';

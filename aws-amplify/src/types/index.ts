@@ -39,8 +39,21 @@ export type ResourceConfig = {
 type AuthConfig = ResourceConfig["Auth"];
 
 export type FrontendConfig = {
-    userSessionProvider?: UserSessionProvider
+    sessionProvider?: AmplifyUserSessionProvider,
+    analyticsProvider?: AnalyticsProvider,
+    loggerProvider?: LoggerProvider
 };
+
+type LoggerProvider = {
+    debug: (message: string) => void,
+    info: (message: string) => void,
+    warn: (message: string) => void,
+    error: (message: string) => void
+}
+
+type AnalyticsProvider = {
+    recordEvent: (event: string) => void // TODO: update to the correct type
+}
 
 export type AmplifyUserSession = {
     isLoggedIn: boolean,
@@ -53,8 +66,8 @@ export type GetUserSessionOptions = {
     refresh?: boolean
 }
 
-export interface UserSessionProvider {
-    getUserSession: (options?: GetUserSessionOptions) => Promise<AmplifyUserSession | undefined>,
+export interface AmplifyUserSessionProvider {
+    getUserSession: (options?: GetUserSessionOptions) => Promise<AmplifyUserSession>,
     listenUserSession(): Observable<AmplifyUserSession>
 }
 

@@ -3,7 +3,7 @@ import type { AmplifyUserSession } from 'aws-amplify';
 export async function UserInfoComponent() {
     const userInfoComponent = document.createElement('div');
 
-    Amplify.listenUserSession().subscribe((userSession: AmplifyUserSession) => {
+    Amplify.Auth.listenUserSession().subscribe((userSession: AmplifyUserSession) => {
         console.log({userSession});
         userInfoComponent.innerHTML = `user: ${JSON.stringify(userSession, null, 2)}`
     });

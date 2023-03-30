@@ -1,5 +1,5 @@
 import { Observable, Observer } from "rxjs";
-import { AmplifyUserSession, UserSessionProvider, UserSessionCallback } from "../types";
+import { AmplifyUserSession, AmplifyUserSessionProvider, UserSessionCallback } from "../types";
 
 export let userSessionNotifier = (user: AmplifyUserSession) => {
     for (const observer of observers) {
@@ -13,7 +13,7 @@ const activeSession: AmplifyUserSession = {
 
 let observers: Observer<AmplifyUserSession>[] = [];
 
-export const userSessionProvider: UserSessionProvider = {
+export const userPoolSessionProvider: AmplifyUserSessionProvider = {
     getUserSession: async () => {
         // check if session is valid, otherwise refresh
         // if first time called get session from persisted state
